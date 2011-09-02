@@ -1,5 +1,5 @@
 ##-------------------------------
-# QL remote control scripts
+# QL remote control script
 # Author Vid Marić // esdf // seis
 ##-------------------------------
 
@@ -7,14 +7,21 @@
 # TO-DO
 ##-------------------------------
 
-  ## * better input catching
-0.2# * remove menu
-  ## * add code for all modes
-     * split into smaller scripts
+  ## * I have
+x.x# * no idea
+  ## * what will be
+     * in the next update.
 
 ##-------------------------------
 # Version history
 ##-------------------------------
+
+  ## * removed the menu
+0.2# * grabbing input options from exec line
+  ## * removed the possibility to invite players (useless, you need to be on the server to invite)
+     * removed the possibility to stop servers (useless, they die after 15 mins of idling anyway)
+     * removed the login, bake your own damn cookies and edit the path :>
+     * added a help 'file' (./qlrc help)
 
   ## * basic menu interface
 0.1# * only ctf spawn scripted in
