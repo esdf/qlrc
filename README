@@ -4,15 +4,13 @@
 ##-------------------------------
 
 ##-------------------------------
-# TO-DO for 0.2
+# TO-DO
 ##-------------------------------
 
- ##
- *# remove menu
- *# add code for all modes
- *# split into smaller scripts
- *# better input catching
- ##
+  ## * better input catching
+0.2# * remove menu
+  ## * add code for all modes
+     * split into smaller scripts
 
 ##-------------------------------
 # Version history
