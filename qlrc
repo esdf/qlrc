@@ -3,13 +3,18 @@
 ##-------------------------------
 # Server start script
 # Author: esdf
-# Usage: ./qlrc-start <country> <mode> <map> <pass>
+# Usage: ./qlrc <country> <mode> <map> <pass>
 # Supported country codes [ EU ONLY SO FAR ]: de nl fr uk se
 # Gametype codes: duel tdm ctf (ca & ft not tried yet)
 ##-------------------------------
 
 ##-------------------------------
-# LET'S GO!!!
+# SET YOUR COOKIE PATH
+##-------------------------------
+cookies="/path/to/cookie-login"
+
+##-------------------------------
+# DONT TOUCH BELOW THIS LINE !!!
 ##-------------------------------
 ccode=$1
 gmode=$2
@@ -38,7 +43,7 @@ ropts () {
 getlinks () {
         qlstoken=$(jshon -e TOKEN -u < tokens)
         sleep 60 # still lazy to properly do this, if you get no link then wait for ql.com, server should pop up in the browser
-	curl -s -b login -A "Mozilla/4.0" http://www.quakelive.com/request/status?token=$qlstoken | jshon > svinfo 
+	curl -s -b $cookies -A "Mozilla/4.0" http://www.quakelive.com/request/status?token=$qlstoken | jshon > svinfo 
 	qlsinv=$(jshon -e SERVER_INFO -e INVITATION_CODE -u < svinfo)
 	qlsid=$(jshon -e SERVER_INFO -e SERVER_ID -u < svinfo)
 	printf "Invite link: http://www.quakelive.com/r/join/$qlsinv\n"
@@ -48,39 +53,39 @@ getlinks () {
 
 
 desrv () {
-	curl -s -b login -d "location=18&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
+	curl -s -b $cookies -d "location=18&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
 	getlinks
 }
 
 nlsrv () {
-	curl -s -b login -d "location=17&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
+	curl -s -b $cookies -d "location=17&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
 	getlinks
 }
 
 frsrv () {
-	curl -s -b login -d "location=20&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
+	curl -s -b $cookies -d "location=20&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
 	getlinks
 }
 
 uksrv () {
-	curl -s -b login -d "location=19&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
+	curl -s -b $cookies -d "location=19&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
 	getlinks
 }
 
 sesrv () {
-	curl -s -b login -d "location=29&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
+	curl -s -b $cookies -d "location=29&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
 	getlinks
 }
 
 hlp () {
 	printf "How to use qlrc:\n"
-	printf "./qlrc-start <country> <mode> <map> <password>\n"
+	printf "./qlrc <country> <mode> <map> <password>\n"
 	printf "Note that server name must be ONE (1) word (e.g. instead of My Server 1 do MyServer1).\n"
 	printf "Supported country codes are: de, nl, uk, fr, se. Type them in lowercase.\n[de = Germany/Frankfurt; nl = Holland/Amsterdam; uk = United Kingdom; fr = France/Paris; se = Sweden/Stockholm]\n"
 	printf "Supported modes are: duel, tdm, ctf. You can also try ca or ft, but I don't know if it will work, no idea how QL is naming those modes in it's spawn system. Same goes as for country codes, type the mode names in lowercase.\n"
 	printf "For map, pick a map associated with game mode. Write lowercase.\n"
 	printf "Password can be left blank.\n"
-	printf "Execin with ./qlrc-start help prints you out these messages."
+	printf "Execin with ./qlrc help prints you out these messages."
 }
 
 ##-------------------------------
