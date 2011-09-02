@@ -1,6 +1,7 @@
 ##-------------------------------
 # QL remote control script
-# Author Vid Marić // esdf // seis
+# Author: Vid Marić // esdf // seis
+# Dependencies: jshon (won't work without it)
 ##-------------------------------
 
 ##-------------------------------
