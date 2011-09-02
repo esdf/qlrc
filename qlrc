@@ -1,0 +1,189 @@
+#!/bin/bash
+# script for remote control of ql server & invites
+# works only with pro accounts
+#
+# author esdf
+##-------------------------------
+# Define vars
+##-------------------------------
+EDITOR=vim
+RED="\033[0;41;30m"
+GRN="\033[0;42;30m"
+STD="\033[0;0;39m"
+
+##-------------------------------
+# Define QL-related vars
+##-------------------------------
+ua="Mozilla/4.0"
+qllogin="https://secure.quakelive.com/user/login"
+qlserver1="http://www.quakelive.com/request/start"
+qlinvite="http://www.quakelive.com/request/invite"
+qlserver0="http://www.quakelive.com/request/stopserver"
+
+ctfdefault="time_limit=20&capture_limit=8&g_spawnItemRune=1&sv_maxclients=16&g_instagib=0&g_spawnarmor=1&player_slots=32&mercylimit=0&friendly_fire=0&dmflags=0&premium=1&map_tag=&pmove_RampJump=0&web_callVoteOptions=1&g_forceDmgThroughSurface=0&g_gravity=800&web_instantWeaponSwitch=0&g_quadDamageFactor=3&ver=3"
+
+##-------------------------------
+# Draw the menu
+##-------------------------------
+hello () {
+	clear
+	echo "~~~~~~~~~~~~~~~~~~~~"
+	echo "   QLRC MAIN MENU  "
+	echo "~~~~~~~~~~~~~~~~~~~~"
+	echo "1. Log in to QL "
+	echo "2. Spawn a server "
+	echo "3. Invite players "
+	echo "4. Stop the server "
+	echo "5. Quit the QLRC "
+}
+
+##-------------------------------
+# Read the options
+##-------------------------------
+ropts () {
+	local choice
+	read -p "Enter choice [ 1 - 5 ] " choice
+	case $choice in
+		1) signincheck ;;
+		2) sspawnmenu ;;
+		3) pinvite ;;
+		4) sstop ;;
+		5) pexit ;;
+		*) echo -e "${RED}Invalid option${STD}" && sleep 2
+	esac
+}
+
+##-------------------------------
+# Check for existing session
+##-------------------------------
+signincheck () {
+	[ -e .ql-login ] && echo -e "${RED}You are already logged in!${STD}" && sleep 2 && hello || signin 
+}
+
+##-------------------------------
+# Say hello to quakelive.com
+##-------------------------------
+signin () {
+	read -p "QL email address: " qlemail
+	read -p "QL password: " qlpass
+	curl -b .ql-login -c .ql-login -d "email=$qlemail&pass=$qlpass" -A "$ua" $qllogin
+	echo -e "${GRN}OK${STD}" && sleep 2 && hello
+}
+
+##-------------------------------
+# Sweet stuff
+##-------------------------------
+sspawnmenu () {
+	clear
+	local choice
+	echo -e "~~~~~~~~~~~~~~~~~~~~~"
+	echo -e "   QLRC SPAWN MENU  "
+	echo -e "~~~~~~~~~~~~~~~~~~~~~"
+	echo -e "1) DUEL"
+	echo -e "2) TDM"
+	echo -e "3) CTF"
+	echo -e "4) CA"
+	echo -e "5) Errr... Main menu please"
+	read -p "Enter choice [ 1 - 5 ] " choice
+	case $choice in
+		1) sduel ;;
+		2) stdm ;;
+		3) sctf ;;
+		4) sca ;;
+		5) hello ;;
+		*) echo -e "${RED}Invalid option${STD}" && sleep 2
+	esac
+}
+
+##-------------------------------
+# Invite players to the server
+##-------------------------------
+pinvite() {
+	local qlsid
+	echo -e "For this to work you have to be on the server,\nthis just allows you to invite people not on your friend list"
+	read -p "Enter users that you wish to invite: [ comma separated, e.g. user1,user2 ] " qlulist
+	read -p "Server id: [ the 6 digit number in the join link ] " qlsid
+	curl -b .ql-login --data "user=$qlulist&server_id=$qlsid" -A "$ua" $qlinvite #might need the actual url, http://www.quakelive.com/request/invite, instead of the string
+	echo -e "${GRN}OK${STD}" && sleep 2 && hello
+}
+
+##-------------------------------
+# Stop the server
+##-------------------------------
+sstop() {
+	local qlsid
+	read -p "Server id: [ the 6 digit number in the join link ] " qlsid
+	curl -b .ql-login -d "server_id=$qlsid" -A "$ua" $qlserver0
+	echo -e "${GRN}OK${STD}" && sleep 2 && hello
+}
+
+##-------------------------------
+# Exit QLRC
+##-------------------------------
+pexit () {
+	echo -e "Cleaning up..." && sleep 1
+	[ -e .ql-login ] && rm .ql-login
+	[ -e .tokens ] && rm .tokens
+	[ -e .svinfo ] && rm .svinfo
+	clear
+	exit 0
+}
+
+#sduel () {
+# duel spawn code here
+#}
+
+#stdm () {
+# tdm spawn code here
+#}
+
+##-------------------------------
+# CTF SETTINGS
+##-------------------------------
+sctf () {
+	# Get input
+	read -p "Map: " arns
+	read -p "Location number: [ check 'country-codes' for location numbers ] " loc
+	read -p "Server password: [ blank for no password ] " pw
+	# Fill server vars
+	ctfgt="game_type=5"
+	ctfar="arenas=$arns"
+	ctfloc="location=$loc"
+	#ctfhn="sv_hostname=$hn"
+	ctfts="teamsize=4"
+	ctfpw="g_password=$pw"
+	ctfacc="access=public"
+	ctfgtn="gametype=ctf"
+	# Spawn
+	curl -b .ql-login -d "$ctfgt&$ctfar&$ctfloc&$ctfts&$ctfpw&$ctfacc&$ctfgtn&$ctfdefault" -A "$ua" $qlserver1 | jshon > .tokens
+	qlstoken=$(jshon -e TOKEN -u < .tokens)
+	echo -e "Server spawned.\n\nGenerating server links, could take some time \n"
+	sleep 120 #being lazy, don't feel like making a loop that checks if server has really spawned so just added a 2 min break to the program to be sure that script won't grab an empty file
+	curl -b .ql-login -A "$ua" http://www.quakelive.com/request/status?token=$qlstoken | jshon > .svinfo
+	#qlsinv=$(jshon -e SERVER_INFO -e INVITATION_CODE -u < .svinfo)
+	#qlsrvid=$(jshon -e SERVER_INFO -e SERVER_ID -u < .svinfo)
+	#echo -e "${GRN}Server invite link: http://www.quakelive.com/r/join/$qlsinv"
+	#echo -e "${GRN}Short server link: http://www.quakelive.com/r/join/$qlsrvid"
+	#echo -e "${GRN}Server id: $qlsrvid"
+	#sleep 10
+	clear
+	hello
+}
+
+#sca () {
+# clan arena spawn code here
+#}
+
+##-------------------------------
+# Trap the program interrupts
+##-------------------------------
+trap '' SIGINT SIGQUIT SIGSTP
+
+##-------------------------------
+# Loop it infinitely
+##-------------------------------
+while true
+do
+	hello
+	ropts
+done

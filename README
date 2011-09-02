@@ -1,0 +1,26 @@
+##-------------------------------
+# QL remote control scripts
+# Author Vid Marić // esdf // seis
+##-------------------------------
+
+##-------------------------------
+# TO-DO for 0.2
+##-------------------------------
+
+ ##
+ *# remove menu
+ *# add code for all modes
+ *# split into smaller scripts
+ *# better input catching
+ ##
+
+##-------------------------------
+# Version history
+##-------------------------------
+
+  ## * basic menu interface
+0.1# * only ctf spawn scripted in
+  ## * displays server links
+     * user invites
+
+
