@@ -17,6 +17,10 @@ x.x# * no idea
 # Version history
 ##-------------------------------
 
+    ## 
+0.2.1# * DRY (c) snapcase
+    ##
+
   ## * removed the menu
 0.2# * grabbing input options from exec line
   ## * removed the possibility to invite players (useless, you need to be on the server to invite)
