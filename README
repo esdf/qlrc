@@ -17,6 +17,10 @@ x.x# * no idea
 # Version history
 ##-------------------------------
 
+    ## * added hostname option for multispawn accounts
+0.2.2# * usage now is ./qlrc <location> <mode> <map> <pass> <name>
+    ## * write the server names in one word, e.g. if you would like to name it "My Server", what you should do is name it "MyServer"
+
     ## 
 0.2.1# * DRY (c) snapcase
     ##

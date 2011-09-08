@@ -3,7 +3,7 @@
 ##-------------------------------
 # Server start script
 # Author: esdf
-# Usage: ./qlrc-start <country> <mode> <map> <pass>
+# Usage: ./qlrc-start <country> <mode> <map> <pass> <name>
 # Supported country codes [ EU ONLY SO FAR ]: de nl fr uk se
 # Gametype codes: duel tdm ctf (ca & ft not tried yet)
 ##-------------------------------
@@ -15,10 +15,11 @@ ccode=$1
 gmode=$2
 map=$3
 pass=$4
+svname=$5
 
-printf "Requested server: $gmode/$ccode on $map (pw: $pass)\n"
+printf "Requested server: $svname [$gmode/$ccode on $map (pw: $pass)]\n"
 
-defvalues="capture_limit=8&time_limit=20&sv_maxclients=24&g_instagib=0&g_spawnarmor=1&players_slots=32&mercylimit=0&premium=1&web_callVoteOptions=1&g_gravity=800&web_instantWeaponSwitch=0&g_forceDmgThroughSurface=0&g_quadDamageFactor=3&round_limit=10&pmove_RampJump=0&map_tag=&g_timeoutCount=5&g_timeoutLen=120&access=public&teamsize=4"
+defvalues="capture_limit=8&time_limit=20&sv_maxclients=24&g_instagib=0&g_spawnarmor=1&players_slots=32&mercylimit=0&premium=1&web_callVoteOptions=1&g_gravity=800&web_instantWeaponSwitch=0&g_forceDmgThroughSurface=0&g_quadDamageFactor=3&round_limit=10&pmove_RampJump=0&map_tag=&g_timeoutCount=5&g_timeoutLen=120&access=public&teamsize=4&g_spawnItemPowerup=1"
 
 ##-------------------------------
 # DEFINE FNS
@@ -36,7 +37,7 @@ ropts () {
 }
 
 getlinks () {
-        qlstoken=$(jshon -e TOKEN -u < tokens)
+        qlstoken=$(jshon -e TOKEN -u < token)
         sleep 60 # still lazy to properly do this, if you get no link then wait for ql.com, server should pop up in the browser
 	curl -s -b login -A "Mozilla/4.0" http://www.quakelive.com/request/status?token=$qlstoken | jshon > svinfo 
 	qlsinv=$(jshon -e SERVER_INFO -e INVITATION_CODE -u < svinfo)
@@ -46,7 +47,7 @@ getlinks () {
 }
 
 srv () {
-	curl -s -b login -d "location=$1&gametype=$gmode&arenas=$map&g_password=$pass&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > tokens
+	curl -s -b login -d "location=$1&gametype=$gmode&arenas=$map&g_password=$pass&sv_hostname=$svname&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > token
 	getlinks
 }
 
