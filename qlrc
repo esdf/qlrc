@@ -38,10 +38,17 @@ ropts () {
 
 getlinks () {
         qlstoken=$(jshon -e TOKEN -u < token)
-        sleep 60 # still lazy to properly do this, if you get no link then wait for ql.com, server should pop up in the browser
-	curl -s -b login -A "Mozilla/4.0" http://www.quakelive.com/request/status?token=$qlstoken | jshon > svinfo 
-	qlsinv=$(jshon -e SERVER_INFO -e INVITATION_CODE -u < svinfo)
-	qlsid=$(jshon -e SERVER_INFO -e SERVER_ID -u < svinfo)
+	let count=0
+	while [ -z $qlsinv ]; do
+		sleep 3 # Waiting 3 seconds to avoid overload
+		((count++)) # Just a little process-counting
+		curl -s -b login -A "Mozilla/4.0" http://www.quakelive.com/request/status?token=$qlstoken | jshon > svinfo
+		printf "($count) Waiting for spawn...\r" # To show that something is happening
+		if [ -e svinfo ]; then
+		 qlsinv=$(jshon -e SERVER_INFO -e INVITATION_CODE -u < svinfo)
+		 qlsid=$(jshon -e SERVER_INFO -e SERVER_ID -u < svinfo)
+		fi
+	done
 	printf "Invite link: http://www.quakelive.com/r/join/$qlsinv\n"
 	printf "Short link: http://www.quakelive.com/r/join/$qlsid\n"
 }
