@@ -17,13 +17,18 @@ x.x# * no idea
 # Version history
 ##-------------------------------
 
+    ## * pql/vql options added
+  0.3# * use like ./qlrc <pql/vql> <de/nl/fr/se/uk> <ctf/tdm/duel> <map> <pass> <name>
+    ## * you HAVE TO put either pql or vql when you spawn, it will break otherwise
+       * there's some garbage output when the script starts grabbing server links, so please append '2>/dev/null' to the command when you want to spawn
+
     ##
 0.2.3# * we are looping it (c) VSM
     ##
 
     ## * added hostname option for multispawn accounts
 0.2.2# * usage now is ./qlrc <location> <mode> <map> <pass> <name>
-    ## * write the server names in one word, e.g. if you would like to name it "My Server", what you should do is name it "MyServer" or use quotes like this: 'My Server'
+    ## * write the server names in one word, e.g. if you would like to name it "My Server", what you should do is name it "MyServer" or use quotes like this: "My Server"
 
     ## 
 0.2.1# * DRY (c) snapcase

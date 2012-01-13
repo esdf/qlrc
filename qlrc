@@ -3,7 +3,7 @@
 ##-------------------------------
 # Server start script
 # Author: esdf
-# Usage: ./qlrc-start <country> <mode> <map> <pass> <name>
+# Usage: ./qlrc <ruleset> <country> <mode> <map> <pass> <name>
 # Supported country codes [ EU ONLY SO FAR ]: de nl fr uk se
 # Gametype codes: duel tdm ctf (ca & ft not tried yet)
 ##-------------------------------
@@ -11,13 +11,14 @@
 ##-------------------------------
 # LET'S GO!!!
 ##-------------------------------
-ccode=$1
-gmode=$2
-map=$3
-pass=$4
-svname=$5
+ruleset=$1
+ccode=$2
+gmode=$3
+map=$4
+pass=$5
+svname=$6
 
-printf "Requested server: $svname [$gmode/$ccode on $map (pw: $pass)]\n"
+printf "Requested server: $svname [$ruleset $gmode/$ccode on $map (pw: $pass)]\n"
 
 defvalues="capture_limit=8&time_limit=20&sv_maxclients=24&g_instagib=0&g_spawnarmor=1&players_slots=32&mercylimit=0&premium=1&web_callVoteOptions=1&g_gravity=800&web_instantWeaponSwitch=0&g_forceDmgThroughSurface=0&g_quadDamageFactor=3&round_limit=10&pmove_RampJump=0&map_tag=&g_timeoutCount=5&g_timeoutLen=120&access=public&teamsize=4&g_spawnItemPowerup=1"
 
@@ -26,13 +27,18 @@ defvalues="capture_limit=8&time_limit=20&sv_maxclients=24&g_instagib=0&g_spawnar
 ##-------------------------------
 ropts () {
 	case $ccode in
-		"de") srv 18;;
-		"nl") srv 17;;
-		"fr") srv 20;;
-		"uk") srv 19;;
-		"se") srv 29;;
-		"help") hlp;;
-		*) printf "Run with 'help' for usage tips";;
+		"de") ccode=18;;
+		"nl") ccode=17;;
+		"fr") ccode=20;;
+		"uk") ccode=19;;
+		"se") ccode=29;;
+		*) printf "You did something wrong, retry with correct parameters.";;
+	esac
+	
+	case $ruleset in
+		"vql") srv 1;;
+		"pql") srv 2;;
+		*) printf "You did something wrong, retry with correct parameters.";;
 	esac
 }
 
@@ -51,22 +57,13 @@ getlinks () {
 	done
 	printf "Invite link: http://www.quakelive.com/r/join/$qlsinv\n"
 	printf "Short link: http://www.quakelive.com/r/join/$qlsid\n"
+	rm svinfo
+	rm token
 }
 
 srv () {
-	curl -s -b login -d "location=$1&gametype=$gmode&arenas=$map&g_password=$pass&sv_hostname=$svname&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > token
+	curl -s -b login -d "location=$ccode&gametype=$gmode&arenas=$map&g_password=$pass&sv_hostname=$svname&ruleset=$1&$defvalues" -A "Mozilla/4.0" http://www.quakelive.com/request/start | jshon > token
 	getlinks
-}
-
-hlp () {
-	printf "How to use qlrc:\n"
-	printf "./qlrc-start <country> <mode> <map> <password>\n"
-	printf "Note that server name must be ONE (1) word (e.g. instead of My Server 1 do MyServer1).\n"
-	printf "Supported country codes are: de, nl, uk, fr, se. Type them in lowercase.\n[de = Germany/Frankfurt; nl = Holland/Amsterdam; uk = United Kingdom; fr = France/Paris; se = Sweden/Stockholm]\n"
-	printf "Supported modes are: duel, tdm, ctf. You can also try ca or ft, but I don't know if it will work, no idea how QL is naming those modes in it's spawn system. Same goes as for country codes, type the mode names in lowercase.\n"
-	printf "For map, pick a map associated with game mode. Write lowercase.\n"
-	printf "Password can be left blank.\n"
-	printf "Execin with ./qlrc-start help prints you out these messages."
 }
 
 ##-------------------------------
